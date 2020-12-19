@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "567490290126",
+    "firebase_url": "https://reactnativeauth-3c0b9.firebaseio.com",
+    "project_id": "reactnativeauth-3c0b9",
+    "storage_bucket": "reactnativeauth-3c0b9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:567490290126:android:7dd85cf994bd9f63c3cb9f",
+        "android_client_info": {
+          "package_name": "com.astrotrading"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "567490290126-6hlsjd0p4ij0nsfgkuo7b6delo27tg8u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.astrotrading",
+            "certificate_hash": "d1ed065bb3a51f9f4298ac0e1811a86f706900b9"
+          }
+        },
+        {
+          "client_id": "567490290126-ahh8pod759v3nsdtspcka6ut8ul18bb1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.astrotrading",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "567490290126-iu8mmbmmoj4flechnqk6bm6vds647k9i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB77y_Rn_gw_1ZLaTASPg3fjDRTlBvhkSU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "567490290126-iu8mmbmmoj4flechnqk6bm6vds647k9i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,60 @@
+{
+  "name": "astroTrading",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint .",
+    "react-devtools": "react-devtools"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.13.2",
+    "@react-native-community/masked-view": "^0.1.10",
+    "@react-native-firebase/app": "^10.0.0",
+    "@react-native-firebase/auth": "^10.0.0",
+    "@react-navigation/bottom-tabs": "^5.11.1",
+    "@react-navigation/material-bottom-tabs": "^5.3.9",
+    "@react-navigation/material-top-tabs": "^5.3.9",
+    "@react-navigation/native": "^5.8.9",
+    "@react-navigation/stack": "^5.12.6",
+    "axios": "^0.21.0",
+    "base-64": "^1.0.0",
+    "formik": "^2.2.5",
+    "react": "16.13.1",
+    "react-devtools": "^4.10.0",
+    "react-native": "0.63.3",
+    "react-native-dash": "0.0.11",
+    "react-native-elements": "^3.0.0-alpha.1",
+    "react-native-extended-stylesheet": "^0.12.0",
+    "react-native-gesture-handler": "^1.8.0",
+    "react-native-paper": "^4.4.0",
+    "react-native-phone-number-input": "^1.2.0",
+    "react-native-raw-bottom-sheet": "^2.2.0",
+    "react-native-razorpay": "^2.2.1",
+    "react-native-reanimated": "^1.13.2",
+    "react-native-redash": "^15.11.1",
+    "react-native-safe-area-context": "^3.1.9",
+    "react-native-screens": "^2.14.0",
+    "react-native-tab-view": "^2.15.2",
+    "react-native-table-component": "^1.2.1",
+    "react-native-vector-icons": "^7.1.0",
+    "reanimated-bottom-sheet": "^1.0.0-alpha.22",
+    "yup": "^0.30.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.4",
+    "@babel/runtime": "^7.8.4",
+    "@react-native-community/eslint-config": "^1.1.0",
+    "babel-jest": "^25.1.0",
+    "eslint": "^6.5.1",
+    "jest": "^25.1.0",
+    "metro-react-native-babel-preset": "^0.59.0",
+    "react-test-renderer": "16.13.1"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
