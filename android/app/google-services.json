@@ -1,29 +1,20 @@
 {
   "project_info": {
-    "project_number": "567490290126",
-    "firebase_url": "https://reactnativeauth-3c0b9.firebaseio.com",
-    "project_id": "reactnativeauth-3c0b9",
-    "storage_bucket": "reactnativeauth-3c0b9.appspot.com"
+    "project_number": "755413928369",
+    "project_id": "astro-trading-91631",
+    "storage_bucket": "astro-trading-91631.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:567490290126:android:7dd85cf994bd9f63c3cb9f",
+        "mobilesdk_app_id": "1:755413928369:android:31cca0321951b674a61590",
         "android_client_info": {
           "package_name": "com.astrotrading"
         }
       },
       "oauth_client": [
         {
-          "client_id": "567490290126-6hlsjd0p4ij0nsfgkuo7b6delo27tg8u.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.astrotrading",
-            "certificate_hash": "d1ed065bb3a51f9f4298ac0e1811a86f706900b9"
-          }
-        },
-        {
-          "client_id": "567490290126-ahh8pod759v3nsdtspcka6ut8ul18bb1.apps.googleusercontent.com",
+          "client_id": "755413928369-j4160va78f1l8ctkdp27tnkts7v2o95u.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.astrotrading",
@@ -31,20 +22,28 @@
           }
         },
         {
-          "client_id": "567490290126-iu8mmbmmoj4flechnqk6bm6vds647k9i.apps.googleusercontent.com",
+          "client_id": "755413928369-uski5bcbehlnre14lpeaso4q2oppqn8q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.astrotrading",
+            "certificate_hash": "d1ed065bb3a51f9f4298ac0e1811a86f706900b9"
+          }
+        },
+        {
+          "client_id": "755413928369-o2e5ur8qeq3mc932tlc4sgbjfq5095g9.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyB77y_Rn_gw_1ZLaTASPg3fjDRTlBvhkSU"
+          "current_key": "AIzaSyCOYR5P5VlXjUn-KyGLv0bwbz5jbGUPPJ4"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "567490290126-iu8mmbmmoj4flechnqk6bm6vds647k9i.apps.googleusercontent.com",
+              "client_id": "755413928369-o2e5ur8qeq3mc932tlc4sgbjfq5095g9.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
