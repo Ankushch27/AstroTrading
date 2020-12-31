@@ -29,7 +29,7 @@ const Watchlist = ({ navigation, route }) => {
             //201203 122000
 
             if (!r[5]) {
-              console.log(r);
+              return;
             }
             r[5] = r[5].padStart(6, '0');
 
@@ -45,6 +45,10 @@ const Watchlist = ({ navigation, route }) => {
             if (r[1] && r[1] == filterState.filter.key) {
               SymbolDetailsData.push(rowString.split(','));
               //201203 122000
+              if (!r[5]) {
+                return;
+              }
+              r[5] = r[5].padStart(6, '0');
               var datetime = `${r[4][4]}${r[4][5]}/${r[4][2]}${r[4][3]}  ${r[5][0]}${r[5][1]}:${r[5][2]}${r[5][3]}`;
               let str = `${r[0]}*${
                 r[2] == '1' ? 'Long' : 'Short'
