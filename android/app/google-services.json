@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "755413928369-oejm2bsd7d7rla0o7fjveqg6m2nuk5aj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.astrotrading",
+            "certificate_hash": "6e50ba5b47830b6bb2b7c1ad1c421c9d6d5fd033"
+          }
+        },
+        {
           "client_id": "755413928369-uski5bcbehlnre14lpeaso4q2oppqn8q.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
