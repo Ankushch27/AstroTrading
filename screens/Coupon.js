@@ -15,7 +15,7 @@ import { Formik } from 'formik';
 import Axios from 'axios';
 import { AuthContext } from '../contexts/AuthContext';
 
-const Coupon = ({ route }) => {
+const Coupon = ({ navigation, route }) => {
   const { price, module } = route.params;
   const { loginState, dispatch } = useContext(AuthContext);
   const userInfo = loginState.userData;
@@ -58,70 +58,111 @@ const Coupon = ({ route }) => {
         setCouponMsg(couponRes.data.data);
         return;
       }
-      let payableAmount = (couponRes.data.data * price) / 100;
-      setCouponName(coupon);
-      setCouponMsg(`Coupon code ${coupon} has been successfully applied`);
-      setAmount(payableAmount);
+      let couponArray = couponRes.data.data.split(':');
+      let resAmount = couponArray[0];
+      let resModuleList = couponArray[1].split(',');
+      let payableAmount = (resAmount * price) / 100;
+      if (resModuleList.includes(module)) {
+        setCouponName(coupon);
+        setCouponMsg(`Coupon code ${coupon} has been successfully applied`);
+        setAmount(payableAmount);
+      } else {
+        if (module == '2') {
+          setCouponMsg('Coupon is available on Positional only');
+        }
+        if (module == '3') {
+          setCouponMsg('Coupon is available on Intraday only');
+        }
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
   const createOrder = (amount, updateModule) => {
-    // if (clickable) {
-    // setClickable(false);
-    Axios({
-      method: 'post',
-      url: 'https://api.razorpay.com/v1/orders',
-      auth: {
-        username: RazorAppId,
-        password: RazorAppSecret,
-      },
-      data: {
-        amount: amount,
-        currency: 'INR',
-        receipt: receiptNo,
-      },
-    }).then(function (response) {
-      console.log(response.data);
-      var options = {
-        description: 'Credits towards consultation',
-        image: 'https://cdn.razorpay.com/logos/GArhRIXEDZ2mMU_medium.jpg',
-        currency: response.data.currency,
-        key: RazorAppId,
-        amount: response.data.amount,
-        name: 'Astro Trading',
-        order_id: response.data.id,
-        prefill: {
-          email: userInfo.email,
-          contact: userInfo.mobile,
-          name: userInfo.username,
+    if (amount > 0) {
+      // setClickable(false);
+      Axios({
+        method: 'post',
+        url: 'https://api.razorpay.com/v1/orders',
+        auth: {
+          username: RazorAppId,
+          password: RazorAppSecret,
         },
-        theme: { color: '#53a20e' },
-      };
-      RazorpayCheckout.open(options)
-        .then(async (data) => {
-          // handle success
-          console.log('inside');
-          console.log('Razorpay res:', data);
-          try {
-            let req = {
-              Username: userInfo.name,
-              Password: userInfo.password,
-              Email: userInfo.email,
-              Amount:
-                response.data.amount.toString().slice(0, -2) +
-                '.' +
-                response.data.amount.toString().slice(-2),
-              Mobile: userInfo.mobile,
-              Module: updateModule,
-              NumberOfLicenses: 1,
-              Lic_update: true,
-              Update: false,
-            };
-            //console.log(JSON.stringify(req))
-            let res = await api.post('/RegisterUser', req);
+        data: {
+          amount: amount,
+          currency: 'INR',
+          receipt: receiptNo,
+        },
+      }).then(function (response) {
+        console.log(response.data);
+        var options = {
+          description: 'Credits towards consultation',
+          image: 'https://cdn.razorpay.com/logos/GArhRIXEDZ2mMU_medium.jpg',
+          currency: response.data.currency,
+          key: RazorAppId,
+          amount: response.data.amount,
+          name: 'Astro Trading',
+          order_id: response.data.id,
+          prefill: {
+            email: userInfo.email,
+            contact: userInfo.mobile,
+            name: userInfo.username,
+          },
+          theme: { color: '#53a20e' },
+        };
+        RazorpayCheckout.open(options)
+          .then(async (data) => {
+            // handle success
+            console.log('inside');
+            console.log('Razorpay res:', data);
+            try {
+              let req = {
+                Username: userInfo.name,
+                Password: userInfo.password,
+                Email: userInfo.email,
+                Amount:
+                  response.data.amount.toString().slice(0, -2) +
+                  '.' +
+                  response.data.amount.toString().slice(-2),
+                Mobile: userInfo.mobile,
+                Module: updateModule,
+                NumberOfLicenses: 1,
+                Lic_update: true,
+                Update: false,
+              };
+              //console.log(JSON.stringify(req))
+              let res = await api.post('/RegisterUser', req);
 
+              let transRes = await api.post('/TransactionUpdate', {
+                Mobile: userInfo.mobile,
+                Receipt_no: receiptNo,
+                Amount:
+                  response.data.amount.toString().slice(0, -2) +
+                  '.' +
+                  response.data.amount.toString().slice(-2),
+                Order_no: data.razorpay_order_id,
+                Trans: '',
+                Coupon: couponName,
+                Payment_no: data.razorpay_payment_id,
+                Sign: data.razorpay_signature,
+                isSuccess: 1,
+              });
+              console.log('transRes', transRes);
+              console.log('res.data', res);
+              if (res.data.code == '400') {
+                let res2 = await api.get('/GetDetails', {
+                  headers: { Authorization: `Bearer ${loginState.userToken}` },
+                });
+                let currentUser = res2.data.data[0];
+                dispatch({ type: 'SAVE_USER', id: currentUser });
+              }
+            } catch (e) {
+              console.log('catch e', e);
+            }
+          })
+          .catch(async (error) => {
+            // handle failure
             let transRes = await api.post('/TransactionUpdate', {
               Mobile: userInfo.mobile,
               Receipt_no: receiptNo,
@@ -129,59 +170,73 @@ const Coupon = ({ route }) => {
                 response.data.amount.toString().slice(0, -2) +
                 '.' +
                 response.data.amount.toString().slice(-2),
-              Order_no: data.razorpay_order_id,
+              Order_no: response.data.id,
+              Coupon: '',
               Trans: '',
-              Coupon: couponName,
-              Payment_no: data.razorpay_payment_id,
-              Sign: data.razorpay_signature,
-              isSuccess: 1,
+              Payment_no: '',
+              Sign: '',
+              isSuccess: 0,
             });
-            console.log('transRes', transRes);
-            console.log('res.data', res);
-            if (res.data.code == '400') {
-              let res2 = await api.get('/GetDetails', {
-                headers: { Authorization: `Bearer ${loginState.userToken}` },
-              });
-              let currentUser = res2.data.data[0];
-              dispatch({ type: 'SAVE_USER', id: currentUser });
-            }
-            // dispatch({
-            //   type: 'SAVE_USER',
-            //   id: { ...userInfo, module: updateModule },
-            // });
-          } catch (e) {
-            console.log('catch e', e);
-          }
-          // setClickable(true);
-          // alert(`Success: ${data.razorpay_payment_id}`);
-        })
-        .catch(async (error) => {
-          // handle failure
-          let transRes = await api.post('/TransactionUpdate', {
-            Mobile: userInfo.mobile,
-            Receipt_no: receiptNo,
-            Amount:
-              response.data.amount.toString().slice(0, -2) +
-              '.' +
-              response.data.amount.toString().slice(-2),
-            Order_no: response.data.id,
-            Coupon: '',
-            Trans: '',
-            Payment_no: '',
-            Sign: '',
-            isSuccess: 0,
+            console.log('F.inside', error.error.description);
+            alert(`Error: ${error.error.description}`);
           });
-          console.log('F.inside', error.error.description);
-          alert(`Error: ${error.error.description}`);
-          // setClickable(true);
+          navigation.navigate('Home')
+      });
+      console.log('outside');
+    } else {
+      let req = {
+        Username: userInfo.name,
+        Password: userInfo.password,
+        Email: userInfo.email,
+        Amount: '0.00',
+        Mobile: userInfo.mobile,
+        Module: updateModule,
+        NumberOfLicenses: 1,
+        Lic_update: true,
+        Update: false,
+      };
+      //console.log(JSON.stringify(req))
+      api
+        .post('/RegisterUser', req)
+        .then((res) => {
+          if (res.data.code == '400') {
+            api
+              .get('/GetDetails', {
+                headers: { Authorization: `Bearer ${loginState.userToken}` },
+              })
+              .then((res2) => {
+                let currentUser = res2.data.data[0];
+                dispatch({ type: 'SAVE_USER', id: currentUser });
+              })
+              .catch((e) => {
+                console.log('catch e', e);
+              });
+          }
+        })
+        .catch((e) => {
+          console.log('catch e', e);
         });
-      //response.data.pipe(fs.createWriteStream('ada_lovelace.jpg'))
-    });
-    console.log('outside');
-    // } else {
-    //   console.log('click failed');
-    //   return;
-    // }
+
+      api
+        .post('/TransactionUpdate', {
+          Mobile: userInfo.mobile,
+          Receipt_no: receiptNo,
+          Amount: '0.00',
+          Order_no: 'NA',
+          Trans: '',
+          Coupon: couponName,
+          Payment_no: 'NA',
+          Sign: 'NA',
+          isSuccess: 1,
+        })
+        .then((transRes) => {
+          console.log('transRes', transRes);
+        })
+        .catch((e) => {
+          console.log('catch e', e);
+        });
+        navigation.navigate('Home')
+    }
   };
 
   return (
@@ -233,7 +288,7 @@ const Coupon = ({ route }) => {
                         backgroundColor: colors.darkColor,
                         paddingHorizontal: 10,
                         paddingVertical: 3,
-                        borderRadius: 5
+                        borderRadius: 5,
                       }}>
                       <Text
                         style={{ color: colors.lightColor }}
@@ -243,7 +298,7 @@ const Coupon = ({ route }) => {
                     </TouchableOpacity>
                   ) : null}
                 </View>
-                {couponMsg ? (
+                {values.coupon && couponMsg ? (
                   <Text style={globalStyles.error}>{couponMsg}</Text>
                 ) : null}
               </View>
