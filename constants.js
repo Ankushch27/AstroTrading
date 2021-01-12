@@ -17,4 +17,4 @@ export const colors = {
 
 export const FILTER_MODAL_HEIGHT = 350
 
-export const baseURL = 'http://103.16.222.196/user'
+export const baseURL = 'http://103.16.222.196/api/user'
