@@ -17,9 +17,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import PhoneInput from 'react-native-phone-number-input';
 
 const Login = ({ navigation }) => {
-  const { dispatch } = useContext(AuthContext);
+  const { loginDispatch } = useContext(AuthContext);
   const [loginError, setLoginError] = useState(null);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState('');
   const [valid, setValid] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const phoneInput = useRef(null);
@@ -33,7 +33,7 @@ const Login = ({ navigation }) => {
   //   } catch (e) {
   //     console.log(e);
   //   }
-  //   dispatch({ type: 'LOGIN', token: userToken });
+  //   loginDispatch({ type: 'LOGIN', token: userToken });
   // };
   const signIn = async (userToken, mobile, password) => {
     try {
@@ -42,7 +42,7 @@ const Login = ({ navigation }) => {
     } catch (e) {
       console.log(e);
     }
-    dispatch({ type: 'LOGIN', token: userToken });
+    loginDispatch({ type: 'LOGIN', token: userToken });
   };
 
   const saveUserData = async (userData) => {
@@ -51,7 +51,7 @@ const Login = ({ navigation }) => {
     } catch (e) {
       console.log(e);
     }
-    dispatch({ type: 'SAVE_USER', id: userData });
+    loginDispatch({ type: 'SAVE_USER', id: userData });
   };
 
   const loginUser = async (values) => {
@@ -76,7 +76,7 @@ const Login = ({ navigation }) => {
           headers: { Authorization: `Bearer ${token}` },
         });
         let currentUser = res2.data.data[0];
-        dispatch({ type: 'SAVE_USER', id: currentUser });
+        loginDispatch({ type: 'SAVE_USER', id: currentUser });
         signIn(token, values.mobile, values.password);
       }
     } catch (e) {
@@ -124,7 +124,7 @@ const Login = ({ navigation }) => {
                 defaultValue={values.mobile}
                 defaultCode="IN"
                 onChangeFormattedText={(text) => {
-                  values.mobile=text;
+                  values.mobile = text;
                 }}
                 // onChangeText={handleChange('mobile')}
                 //value={values.mobile}
@@ -151,7 +151,11 @@ const Login = ({ navigation }) => {
               {touched.password && errors.password && (
                 <Text style={globalStyles.error}>{errors.password}</Text>
               )}
-              <Text style={globalStyles.forgotPassword}>Forgot Password?</Text>
+              <Text
+                style={globalStyles.forgotPassword}
+                onPress={() => navigation.navigate('ForgotPassword')}>
+                Forgot Password?
+              </Text>
               <SolidButton text="login" onPress={handleSubmit} />
               <Text style={globalStyles.textCenter}>
                 <Text style={globalStyles.textWhite}>
