@@ -8,7 +8,7 @@ import { baseURL, colors } from '../constants';
 import { AuthContext } from '../contexts/AuthContext';
 
 const Profile = ({navigation}) => {
-  const { loginState, dispatch } = useContext(AuthContext);
+  const { loginState, loginDispatch } = useContext(AuthContext);
   const userInfo = loginState.userData;
   const signOut = async () => {
     try {
@@ -17,7 +17,7 @@ const Profile = ({navigation}) => {
     } catch (e) {
       console.log(e);
     }
-    dispatch({ type: 'LOGOUT' });
+    loginDispatch({ type: 'LOGOUT' });
   };
 
   let expiryDate = userInfo

@@ -8,7 +8,7 @@ import Axios from 'axios';
 import { baseURL } from '../constants';
 
 const AppNavigator = () => {
-  const { loginState, dispatch } = useContext(AuthContext);
+  const { loginState, loginDispatch } = useContext(AuthContext);
 
   // const fetchToken = async () => {
   //   let asyncToken = null;
@@ -17,7 +17,7 @@ const AppNavigator = () => {
   //   } catch (e) {
   //     console.log(e);
   //   }
-  //   dispatch({ type: 'RETRIEVE_TOKEN', token: asyncToken });
+  //   loginDispatch({ type: 'RETRIEVE_TOKEN', token: asyncToken });
   // };
 
   // useEffect(() => {
@@ -37,7 +37,7 @@ const AppNavigator = () => {
     } catch (e) {
       console.log(e);
     }
-    // dispatch({ type: 'LOGIN_CREDENTIALS', loginCredentials: {mobile: mobile, password: password} });
+    // loginDispatch({ type: 'LOGIN_CREDENTIALS', loginCredentials: {mobile: mobile, password: password} });
     console.log(mobile, password)
     try {
       let res = await api.post('/Login', {
@@ -49,7 +49,7 @@ const AppNavigator = () => {
         console.log(
           'Login failed! Either Mobile No or password is incorrect',
         );
-        dispatch({ type: 'STOP_LOADING' });
+        loginDispatch({ type: 'STOP_LOADING' });
         return;
       }
       if (res.data.code == '200') {
@@ -58,11 +58,11 @@ const AppNavigator = () => {
           headers: { Authorization: `Bearer ${userToken}` },
         });
         let currentUser = res2.data.data[0];
-        dispatch({ type: 'SAVE_USER', id: currentUser });
-        dispatch({ type: 'LOGIN', token: userToken });
+        loginDispatch({ type: 'SAVE_USER', id: currentUser });
+        loginDispatch({ type: 'LOGIN', token: userToken });
       }
     } catch (e) {
-      dispatch({ type: 'STOP_LOADING' });
+      loginDispatch({ type: 'STOP_LOADING' });
       console.log('Login failed');
     }
   };

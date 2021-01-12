@@ -4,6 +4,7 @@ import Entry from '../screens/Entry';
 import Login from '../screens/Login';
 import Signup from '../screens/Signup';
 import formik from '../screens/formik';
+import ForgotPassword from '../screens/ForgotPassword';
 
 const AuthStack = createStackNavigator();
 const AuthStackScreen = () => (
@@ -16,6 +17,7 @@ const AuthStackScreen = () => (
     <AuthStack.Screen name="Login" component={Login} />
     {/* <AuthStack.Screen name="Signup" component={Signup} /> */}
     <AuthStack.Screen name="Signup" component={formik} />
+    <AuthStack.Screen name="ForgotPassword" component={ForgotPassword} />
   </AuthStack.Navigator>
 );
 

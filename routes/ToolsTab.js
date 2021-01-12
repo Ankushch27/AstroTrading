@@ -15,12 +15,28 @@ import Scanner from '../screens/Scanner';
 import SupRes from '../screens/SupRes';
 import Watchlist from '../screens/Watchlist';
 import { FilterContext } from '../contexts/FilterContext';
+import { ToastAndroid } from 'react-native';
 
 const Tab = createMaterialTopTabNavigator();
 
+const Toast = ({ visible, message }) => {
+  if (visible) {
+    ToastAndroid.showWithGravityAndOffset(
+      message,
+      ToastAndroid.LONG,
+      ToastAndroid.BOTTOM,
+      25,
+      50
+    );
+    return null;
+  }
+  return null;
+};
+
 const ToolsTabScreen = () => {
   const sheetRef = React.useRef(null);
-  const { loginState } = useContext(AuthContext);
+  const [visibleToast, setvisibleToast] = useState(false);
+  const { loginState, loginDispatch  } = useContext(AuthContext);
   const { dispatch } = useContext(CSVDataContext);
   const { filterState, filterDispatch } = useContext(FilterContext);
   const userInfo = loginState.userData;
@@ -40,25 +56,15 @@ const ToolsTabScreen = () => {
     strategyName.trim()
   }`;
 
-  // switch (strategyKey) {
-  //   case 'WL15':
-  //     strategyText = 'Positional/Money Monsoon 15 Min';
-  //     break;
-  //   case 'WLMH':
-  //     strategyText = 'Positional/Money Monsoon 15 Min';
-  //     break;
-  //   case 'WLMD':
-  //     strategyText = 'Positional/Money Monsoon 15 Min';
-  //     break;
-  //   case 'WLMW':
-  //     strategyText = 'Positional/Money Monsoon 15 Min';
-  //     break;
-  //   default:
-  //     strategyText = 'Intraday/Money ATM 5 Min';
-  //     break;
-  // }
-
-  // console.log('tools', strategyKey)
+  const signOut = async () => {
+    try {
+      await AsyncStorage.removeItem('mobile');
+      await AsyncStorage.removeItem('password');
+    } catch (e) {
+      console.log(e);
+    }
+    loginDispatch({ type: 'LOGOUT' });
+  };
 
   const getCSVData = async (token) => {
     let res = await api.get(`/GetCSV/${strategyKey}`, {
@@ -70,6 +76,10 @@ const ToolsTabScreen = () => {
     const csvData = res.data.data;
     if (res.data.code == '200') {
       dispatch({ type: 'SAVE_CSV_DATA', data: csvData });
+    }
+    else if(csvData == "Login Expired!"){
+      signOut()
+      setvisibleToast(true);
     }
   };
 
@@ -137,6 +147,7 @@ const ToolsTabScreen = () => {
         <Loading />
       )}
       <FilterModal sheetRef={sheetRef} />
+      <Toast visible={visibleToast} message="Another user has logged in using this account!" />
     </>
   );
 };

@@ -10,10 +10,10 @@ const AuthContextProvider = (props) => {
     userData: null,
   };
 
-  const [loginState, dispatch] = useReducer(authReducer, initialLoginState);
+  const [loginState, loginDispatch] = useReducer(authReducer, initialLoginState);
 
   return (
-    <AuthContext.Provider value={{ loginState, dispatch }}>
+    <AuthContext.Provider value={{ loginState, loginDispatch }}>
       {props.children}
     </AuthContext.Provider>
   );

@@ -17,7 +17,7 @@ import { AuthContext } from '../contexts/AuthContext';
 
 const Coupon = ({ navigation, route }) => {
   const { price, module } = route.params;
-  const { loginState, dispatch } = useContext(AuthContext);
+  const { loginState, loginDispatch } = useContext(AuthContext);
   const userInfo = loginState.userData;
   // const [clickable, setClickable] = useState(true);
   const [amount, setAmount] = useState(price);
@@ -155,7 +155,7 @@ const Coupon = ({ navigation, route }) => {
                   headers: { Authorization: `Bearer ${loginState.userToken}` },
                 });
                 let currentUser = res2.data.data[0];
-                dispatch({ type: 'SAVE_USER', id: currentUser });
+                loginDispatch({ type: 'SAVE_USER', id: currentUser });
               }
             } catch (e) {
               console.log('catch e', e);
@@ -206,7 +206,7 @@ const Coupon = ({ navigation, route }) => {
               })
               .then((res2) => {
                 let currentUser = res2.data.data[0];
-                dispatch({ type: 'SAVE_USER', id: currentUser });
+                loginDispatch({ type: 'SAVE_USER', id: currentUser });
               })
               .catch((e) => {
                 console.log('catch e', e);
