@@ -16,6 +16,7 @@ import { colors, baseURL } from '../constants';
 import { globalStyles } from '../styles/globalStyles';
 import { SignupSchema } from '../utils/SignupSchema';
 import Axios from 'axios';
+import { Snackbar } from 'react-native-paper';
 
 const formik = ({ navigation }) => {
   const [confirm, setConfirm] = useState(null);
@@ -23,6 +24,8 @@ const formik = ({ navigation }) => {
   const [isOTPSent, setIsOTPSent] = useState(false);
   const [processing, setProcessing] = useState(false);
   const phoneInput = useRef(null);
+  const [visible, setVisible] = useState(false);
+  const [snackMsg, setSnackMsg] = useState('');
 
   const api = Axios.create({
     baseURL: baseURL,
@@ -45,7 +48,8 @@ const formik = ({ navigation }) => {
       setConfirm(confirmation);
       setIsOTPSent(true);
       setProcessing(false);
-      // Alert.alert('Otp sent');
+      setVisible(true);
+      setSnackMsg('Otp sent');
     } catch (error) {
       setProcessing(false);
       console.log(error);
@@ -56,12 +60,15 @@ const formik = ({ navigation }) => {
     try {
       setProcessing(true);
       await confirm.confirm(values.otp);
-      // Alert.alert('Otp verified!');
+      // setVisible(true);
+      // setSnackMsg('Otp verified!');
       createUser(values);
       setProcessing(false);
     } catch (error) {
+      console.log(error.toString());
       setProcessing(false);
-      Alert.alert('Invalid code.');
+      setVisible(true);
+      setSnackMsg(error.toString());
     }
   };
 
@@ -82,12 +89,14 @@ const formik = ({ navigation }) => {
       });
       console.log(res.data);
       if (res.data.code == '400') {
-        setSignupError('User already registered! Login instead?');
+        setVisible(true);
+        snackMsg('User already registered! Login instead?');
         return;
       }
       navigation.push('Login');
     } catch (e) {
-      setSignupError('Failed to register user');
+      setVisible(true);
+      snackMsg('Failed to register user');
     }
   };
 
@@ -139,6 +148,7 @@ const formik = ({ navigation }) => {
                 <Text style={globalStyles.label}>Email</Text>
                 <View style={globalStyles.inputContainer}>
                   <TextInput
+                    autoCapitalize="none"
                     onChangeText={handleChange('email')}
                     value={values.email}
                     onBlur={handleBlur('email')}
@@ -242,6 +252,17 @@ const formik = ({ navigation }) => {
           </Formik>
           {signupError && <Text style={globalStyles.error}>{signupError}</Text>}
         </ScrollView>
+        <View style={{ justifyContent: 'center' }}>
+          <Snackbar
+            style={{
+              backgroundColor: colors.secondaryColor,
+            }}
+            visible={visible}
+            duration={10000}
+            onDismiss={() => setVisible(false)}>
+            {snackMsg}
+          </Snackbar>
+        </View>
       </View>
     </TouchableWithoutFeedback>
   );
