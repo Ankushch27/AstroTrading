@@ -2,7 +2,7 @@ import auth from '@react-native-firebase/auth';
 import Axios from 'axios';
 import { Formik } from 'formik';
 import React, { useRef, useState } from 'react';
-import { Keyboard, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import { Keyboard, Text, TextInput, TouchableWithoutFeedback, View, ToastAndroid } from 'react-native';
 import { Snackbar } from 'react-native-paper';
 import PhoneInput from 'react-native-phone-number-input';
 import * as yup from 'yup';
@@ -30,6 +30,20 @@ const forgotPasswordSchema = yup.object({
     ),
 });
 
+const Toast = ({ visible, message }) => {
+  if (visible) {
+    ToastAndroid.showWithGravityAndOffset(
+      message,
+      ToastAndroid.LONG,
+      ToastAndroid.BOTTOM,
+      25,
+      50
+    );
+    return null;
+  }
+  return null;
+};
+
 const formik = ({ navigation }) => {
   const [confirm, setConfirm] = useState(null);
   const [signupError, setSignupError] = useState(null);
@@ -39,6 +53,7 @@ const formik = ({ navigation }) => {
   const [visible, setVisible] = useState(false);
   const [snackMsg, setSnackMsg] = useState('');
   const [showPassChange, setShowPassChange] = useState(false);
+  const [visibleToast, setvisibleToast] = useState(false);
 
   const api = Axios.create({
     baseURL: baseURL,
@@ -64,7 +79,7 @@ const formik = ({ navigation }) => {
       setConfirm(confirmation);
       setIsOTPSent(true);
       setProcessing(false);
-      setVisible(true);
+      // setVisible(true);
       // setSnackMsg('Otp sent');
     } catch (error) {
       setProcessing(false);
@@ -102,6 +117,7 @@ const formik = ({ navigation }) => {
         setSignupError('User does not exist! Register?');
         return;
       }
+      setvisibleToast(true);
       setShowPassChange(false);
       navigation.push('Login');
     } catch (e) {
@@ -243,6 +259,7 @@ const formik = ({ navigation }) => {
             onDismiss={() => setVisible(false)}>
             {snackMsg}
           </Snackbar>
+          <Toast visible={visibleToast} message="Password updated successfully!. Login with new password to continue" />
         </View>
       </>
     </TouchableWithoutFeedback>
