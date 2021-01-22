@@ -1,17 +1,25 @@
-import auth from '@react-native-firebase/auth';
 import Axios from 'axios';
 import { Formik } from 'formik';
 import React, { useRef, useState } from 'react';
-import { Keyboard, Text, TextInput, TouchableWithoutFeedback, View, ToastAndroid } from 'react-native';
+import {
+  Keyboard,
+  Text,
+  TextInput,
+  ToastAndroid,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import { Snackbar } from 'react-native-paper';
-import PhoneInput from 'react-native-phone-number-input';
 import * as yup from 'yup';
 import { SolidButton } from '../components/button';
 import { baseURL, colors } from '../constants';
 import { globalStyles } from '../styles/globalStyles';
 
 const otpSchema = yup.object({
-  mobile: yup.string().required('* Mobile no. is a required field'),
+  email: yup
+    .string()
+    .required('* Email is a required field')
+    .email('* Invalid email'),
   otp: yup.string(),
 });
 
@@ -37,7 +45,7 @@ const Toast = ({ visible, message }) => {
       ToastAndroid.LONG,
       ToastAndroid.BOTTOM,
       25,
-      50
+      50,
     );
     return null;
   }
@@ -54,6 +62,7 @@ const formik = ({ navigation }) => {
   const [snackMsg, setSnackMsg] = useState('');
   const [showPassChange, setShowPassChange] = useState(false);
   const [visibleToast, setvisibleToast] = useState(false);
+  const [userToken, setUserToken] = useState('');
 
   const api = Axios.create({
     baseURL: baseURL,
@@ -61,7 +70,7 @@ const formik = ({ navigation }) => {
 
   const handleSubmit = async (values) => {
     if (!isOTPSent) {
-      verifyPhoneNumber(values.mobile);
+      verifyEmail(values.email);
     } else {
       confirmCode(values);
     }
@@ -70,30 +79,52 @@ const formik = ({ navigation }) => {
     }
   };
 
-  const verifyPhoneNumber = async (phoneNumber) => {
+  const verifyEmail = async (email) => {
+    setProcessing(true);
+    console.log('start verify');
     try {
-      setProcessing(true);
-      console.log('start verify');
-      const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
-      console.log('await');
-      setConfirm(confirmation);
+      let res = await api.post('/RequestOtp', {
+        To: email,
+        isRegister: false,
+      });
+      console.log(res.data);
+      if (!res.data.code == '200') {
+        setVisible(true);
+        setSnackMsg(res.data.data);
+        return;
+      }
+      setUserToken(res.data.data);
       setIsOTPSent(true);
       setProcessing(false);
-      // setVisible(true);
-      // setSnackMsg('Otp sent');
+      setVisible(true);
+      setSnackMsg('Otp sent to Email');
     } catch (error) {
       setProcessing(false);
-      console.log(error);
+      setVisible(true);
+      setSnackMsg('Failed to send OTP');
     }
   };
 
   const confirmCode = async (values) => {
+    setProcessing(true);
+    console.log(userToken);
     try {
-      setProcessing(true);
-      await confirm.confirm(values.otp);
+      let res = await api.post(
+        '/VerifyOTP',
+        {
+          OTP: values.otp,
+        },
+        {
+          headers: { Authorization: `Bearer ${userToken}` },
+        },
+      );
+      console.log(res.data);
+      if (!res.data.code == '200') {
+        setVisible(true);
+        setSnackMsg(res.data.data);
+        return;
+      }
       setShowPassChange(true);
-      // setSnackMsg('Otp verified!');
-      // createUser(values);
       setProcessing(false);
     } catch (error) {
       console.log(error.toString());
@@ -110,10 +141,10 @@ const formik = ({ navigation }) => {
     try {
       let res = await api.post('/updatepassword', {
         Password: values.password,
-        Mobile: values.mobile,
+        Mobile: values.email,
       });
       console.log(res.data);
-      if (res.data.code == '400') {
+      if (!res.data.code == '200') {
         setSignupError('User does not exist! Register?');
         return;
       }
@@ -131,7 +162,7 @@ const formik = ({ navigation }) => {
         <View style={globalStyles.container}>
           <Formik
             initialValues={{
-              mobile: '',
+              email: '',
               otp: '',
               password: '',
               confirmPassword: '',
@@ -154,24 +185,27 @@ const formik = ({ navigation }) => {
                 {!showPassChange && (
                   <>
                     <Text style={globalStyles.label}>
-                      Confirm your Mobile No. to reset password
+                      Confirm your Email address to reset password
                     </Text>
-                    <PhoneInput
-                      ref={phoneInput}
-                      defaultValue={values.mobile}
-                      defaultCode="IN"
-                      onChangeFormattedText={(text) => {
-                        values.mobile = text;
-                      }}
-                      withDarkTheme
-                      withShadow
-                    />
-                    {touched.mobile && errors.mobile && (
-                      <Text style={globalStyles.error}>{errors.mobile}</Text>
+                    <View style={globalStyles.inputContainer}>
+                      <TextInput
+                        autoCapitalize="none"
+                        onChangeText={handleChange('email')}
+                        value={values.email}
+                        onBlur={handleBlur('email')}
+                        style={[globalStyles.textWhite, globalStyles.input]}
+                        keyboardType="email-address"
+                        textContentType="emailAddress"
+                        placeholder="Email"
+                        placeholderTextColor={colors.secondaryColor}
+                      />
+                    </View>
+                    {touched.email && errors.email && (
+                      <Text style={globalStyles.error}>{errors.email}</Text>
                     )}
                     {!isOTPSent && (
                       <SolidButton
-                        text="Verify Mobile No."
+                        text="Verify Email"
                         onPress={handleSubmit}
                         isLoading={processing}
                       />
@@ -259,7 +293,10 @@ const formik = ({ navigation }) => {
             onDismiss={() => setVisible(false)}>
             {snackMsg}
           </Snackbar>
-          <Toast visible={visibleToast} message="Password updated successfully!. Login with new password to continue" />
+          <Toast
+            visible={visibleToast}
+            message="Password updated successfully!. Login with new password to continue"
+          />
         </View>
       </>
     </TouchableWithoutFeedback>

@@ -44,7 +44,7 @@ const Coupon = ({ navigation, route }) => {
     setAmount(price);
     let data = JSON.stringify({
       CouponName: coupon,
-      Mobile: userInfo.mobile,
+      Mobile: userInfo.email,
     });
     try {
       let couponRes = await api.post('/GetCouponValue', data, {
@@ -135,7 +135,7 @@ const Coupon = ({ navigation, route }) => {
               let res = await api.post('/RegisterUser', req);
 
               let transRes = await api.post('/TransactionUpdate', {
-                Mobile: userInfo.mobile,
+                Mobile: userInfo.email,
                 Receipt_no: receiptNo,
                 Amount:
                   response.data.amount.toString().slice(0, -2) +
@@ -164,7 +164,7 @@ const Coupon = ({ navigation, route }) => {
           .catch(async (error) => {
             // handle failure
             let transRes = await api.post('/TransactionUpdate', {
-              Mobile: userInfo.mobile,
+              Mobile: userInfo.email,
               Receipt_no: receiptNo,
               Amount:
                 response.data.amount.toString().slice(0, -2) +
@@ -219,7 +219,7 @@ const Coupon = ({ navigation, route }) => {
 
       api
         .post('/TransactionUpdate', {
-          Mobile: userInfo.mobile,
+          Mobile: userInfo.email,
           Receipt_no: receiptNo,
           Amount: '0.00',
           Order_no: 'NA',

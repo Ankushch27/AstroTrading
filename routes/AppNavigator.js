@@ -29,25 +29,25 @@ const AppNavigator = () => {
   });
   
   const autoLogin = async () => {
-    let mobile = null;
+    let email = null;
     let password = null;
     try {
-      mobile = await AsyncStorage.getItem('mobile');
+      email = await AsyncStorage.getItem('email');
       password = await AsyncStorage.getItem('password');
     } catch (e) {
       console.log(e);
     }
-    // loginDispatch({ type: 'LOGIN_CREDENTIALS', loginCredentials: {mobile: mobile, password: password} });
-    console.log(mobile, password)
+    // loginDispatch({ type: 'LOGIN_CREDENTIALS', loginCredentials: {email: email, password: password} });
+    console.log(email, password)
     try {
       let res = await api.post('/Login', {
-        Mobile: mobile,
+        Mobile: email,
         Password: password,
       });
       console.log(res.data);
       if (res.data.code == '400') {
         console.log(
-          'Login failed! Either Mobile No or password is incorrect',
+          'Login failed! Either Email or password is incorrect',
         );
         loginDispatch({ type: 'STOP_LOADING' });
         return;

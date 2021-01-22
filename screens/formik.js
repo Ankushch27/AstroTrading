@@ -1,6 +1,7 @@
 import auth from '@react-native-firebase/auth';
+import Axios from 'axios';
 import { Formik } from 'formik';
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Keyboard,
   ScrollView,
@@ -8,15 +9,13 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   View,
-  Alert,
 } from 'react-native';
+import { Snackbar } from 'react-native-paper';
 import PhoneInput from 'react-native-phone-number-input';
-import { SolidButton, TextButton } from '../components/button';
-import { colors, baseURL } from '../constants';
+import { SolidButton } from '../components/button';
+import { baseURL, colors } from '../constants';
 import { globalStyles } from '../styles/globalStyles';
 import { SignupSchema } from '../utils/SignupSchema';
-import Axios from 'axios';
-import { Snackbar } from 'react-native-paper';
 
 const formik = ({ navigation }) => {
   const [confirm, setConfirm] = useState(null);
@@ -26,6 +25,7 @@ const formik = ({ navigation }) => {
   const phoneInput = useRef(null);
   const [visible, setVisible] = useState(false);
   const [snackMsg, setSnackMsg] = useState('');
+  const [userToken, setUserToken] = useState('');
 
   const api = Axios.create({
     baseURL: baseURL,
@@ -33,35 +33,56 @@ const formik = ({ navigation }) => {
 
   const handleSubmit = async (values) => {
     if (!isOTPSent) {
-      signInWithPhoneNumber(values.mobile);
+      sendEmailOTP(values.email);
     } else {
       confirmCode(values);
     }
   };
 
-  const signInWithPhoneNumber = async (phoneNumber) => {
+  const sendEmailOTP = async (email) => {
+    setProcessing(true);
+    console.log('start signup');
     try {
-      setProcessing(true);
-      console.log('start signup');
-      const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
-      console.log('await');
-      setConfirm(confirmation);
+      let res = await api.post('/RequestOtp', {
+        To: email,
+        isRegister: true,
+      });
+      console.log(res.data);
+      if (!res.data.code == '200') {
+        setVisible(true);
+        setSnackMsg(res.data.data);
+        return;
+      }
+      setUserToken(res.data.data);
       setIsOTPSent(true);
       setProcessing(false);
       setVisible(true);
-      setSnackMsg('Otp sent');
+      setSnackMsg('Otp sent to Email');
     } catch (error) {
       setProcessing(false);
-      console.log(error);
+      setVisible(true);
+      setSnackMsg('Failed to send OTP');
     }
   };
 
   const confirmCode = async (values) => {
+    setProcessing(true);
     try {
-      setProcessing(true);
-      await confirm.confirm(values.otp);
-      // setVisible(true);
-      // setSnackMsg('Otp verified!');
+      let res = await api.post(
+        '/VerifyOTP',
+        {
+          OTP: values.otp,
+        },
+        {
+          headers: { Authorization: `Bearer ${userToken}` },
+        },
+      );
+      console.log(res.data);
+      if (!res.data.code == '200') {
+        setVisible(true);
+        setSnackMsg(res.data.data);
+        return;
+      }
       createUser(values);
       setProcessing(false);
     } catch (error) {
@@ -90,13 +111,13 @@ const formik = ({ navigation }) => {
       console.log(res.data);
       if (res.data.code == '400') {
         setVisible(true);
-        snackMsg('User already registered! Login instead?');
+        setSnackMsg('User already registered! Login instead?');
         return;
       }
       navigation.push('Login');
     } catch (e) {
       setVisible(true);
-      snackMsg('Failed to register user');
+      setSnackMsg('Failed to register user');
     }
   };
 
@@ -145,22 +166,19 @@ const formik = ({ navigation }) => {
                 {touched.name && errors.name && (
                   <Text style={globalStyles.error}>{errors.name}</Text>
                 )}
-                <Text style={globalStyles.label}>Email</Text>
-                <View style={globalStyles.inputContainer}>
-                  <TextInput
-                    autoCapitalize="none"
-                    onChangeText={handleChange('email')}
-                    value={values.email}
-                    onBlur={handleBlur('email')}
-                    style={[globalStyles.textWhite, globalStyles.input]}
-                    keyboardType="email-address"
-                    textContentType="emailAddress"
-                    placeholder="Email"
-                    placeholderTextColor={colors.secondaryColor}
-                  />
-                </View>
-                {touched.email && errors.email && (
-                  <Text style={globalStyles.error}>{errors.email}</Text>
+                <Text style={globalStyles.label}>Mobile No</Text>
+                <PhoneInput
+                  ref={phoneInput}
+                  defaultValue={values.mobile}
+                  defaultCode="IN"
+                  onChangeFormattedText={(text) => {
+                    values.mobile = text;
+                  }}
+                  withDarkTheme
+                  withShadow
+                />
+                {touched.mobile && errors.mobile && (
+                  <Text style={globalStyles.error}>{errors.mobile}</Text>
                 )}
                 <Text style={globalStyles.label}>Password</Text>
                 <View style={globalStyles.inputContainer}>
@@ -196,19 +214,22 @@ const formik = ({ navigation }) => {
                     {errors.confirmPassword}
                   </Text>
                 )}
-                <Text style={globalStyles.label}>Mobile No</Text>
-                <PhoneInput
-                  ref={phoneInput}
-                  defaultValue={values.mobile}
-                  defaultCode="IN"
-                  onChangeFormattedText={(text) => {
-                    values.mobile = text;
-                  }}
-                  withDarkTheme
-                  withShadow
-                />
-                {touched.mobile && errors.mobile && (
-                  <Text style={globalStyles.error}>{errors.mobile}</Text>
+                <Text style={globalStyles.label}>Email</Text>
+                <View style={globalStyles.inputContainer}>
+                  <TextInput
+                    autoCapitalize="none"
+                    onChangeText={handleChange('email')}
+                    value={values.email}
+                    onBlur={handleBlur('email')}
+                    style={[globalStyles.textWhite, globalStyles.input]}
+                    keyboardType="email-address"
+                    textContentType="emailAddress"
+                    placeholder="Email"
+                    placeholderTextColor={colors.secondaryColor}
+                  />
+                </View>
+                {touched.email && errors.email && (
+                  <Text style={globalStyles.error}>{errors.email}</Text>
                 )}
                 {!isOTPSent && (
                   <SolidButton

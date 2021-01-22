@@ -12,7 +12,7 @@ const Profile = ({navigation}) => {
   const userInfo = loginState.userData;
   const signOut = async () => {
     try {
-      await AsyncStorage.removeItem('mobile');
+      await AsyncStorage.removeItem('email');
       await AsyncStorage.removeItem('password');
     } catch (e) {
       console.log(e);

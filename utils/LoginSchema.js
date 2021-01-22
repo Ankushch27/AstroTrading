@@ -1,6 +1,9 @@
 import * as yup from 'yup';
 
 export const LoginSchema = yup.object({
-  mobile: yup.string().required('* Mobile no. is a required field'),
+  email: yup
+    .string()
+    .required('* Email is a required field')
+    .email('* Invalid email'),
   password: yup.string().required('* Password is a required field'),
 });
