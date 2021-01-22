@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Image, View } from 'react-native';
 import ToolsTable from '../components/ToolsTable';
-import { colors } from '../constants';
+import { colors, baseURL } from '../constants';
 import { AuthContext } from '../contexts/AuthContext';
 import { CSVDataContext } from '../contexts/CSVDataContext';
 import Axios from 'axios';
@@ -64,7 +64,7 @@ const SymbolDetails = ({ route }) => {
       }
     });
     Axios.create({
-      baseURL: `http://103.16.222.196/user/${imgEndPoint}`,
+      baseURL: `${baseURL}/${imgEndPoint}`,
     })
       .get(`${detailsTableData1[0][0]}`, {
         headers: { Authorization: `Bearer ${loginState.userToken}` },
@@ -73,10 +73,6 @@ const SymbolDetails = ({ route }) => {
         setImageSrc(res.data.data);
       });
   }
-
-  // if (detailsTableData1[0] == data) {
-  // }
-  console.log('image', detailsTableData1);
 
   const symbolHeader1 = [
     'Name',
