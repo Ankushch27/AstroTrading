@@ -64,7 +64,10 @@ const SymbolDetails = ({ route }) => {
       }
     });
     Axios.create({
-      baseURL: `${baseURL}/${imgEndPoint}`,
+      
+      baseURL: `http://103.16.222.196/api/user${imgEndPoint}`,
+
+      // baseURL: `${baseURL}/${imgEndPoint}`,
     })
       .get(`${detailsTableData1[0][0]}`, {
         headers: { Authorization: `Bearer ${loginState.userToken}` },

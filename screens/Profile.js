@@ -67,13 +67,13 @@ const Profile = ({navigation}) => {
             }}>
             <Icon name="account-circle-outline" size={80} />
             <View style={{ marginLeft: 20 }}>
-              <Text style={{ fontSize: 20, fontWeight: '700' }}>
+              <Text style={{ fontSize: 16, fontWeight: '700' }}>
                 {userInfo.username}
               </Text>
-              <Text style={{ fontSize: 16, color: colors.secondaryColor }}>
+              <Text style={{ fontSize: 14, color: colors.secondaryColor }}>
                 {userInfo.email}
               </Text>
-              <Text style={{ fontSize: 16, color: colors.secondaryColor }}>
+              <Text style={{ fontSize: 14, color: colors.secondaryColor }}>
                 {userInfo.mobile}
               </Text>
             </View>
@@ -81,13 +81,14 @@ const Profile = ({navigation}) => {
               style={{
                 backgroundColor: colors.darkColor,
                 alignSelf: 'center',
-                paddingHorizontal: 30,
+                paddingHorizontal: 10,
                 paddingVertical: 5,
                 borderRadius: 5,
-                marginLeft: 40,
+                marginLeft: 20,
+                marginRight: 5,
               }}>
               <Text
-                style={{ color: colors.lightColor, fontWeight: 'bold' }}
+                style={{ color: colors.lightColor, fontWeight: 'bold'  }}
                 onPress={signOut}>
                 Signout
               </Text>
