@@ -16,10 +16,32 @@ import SupRes from '../screens/SupRes';
 import Watchlist from '../screens/Watchlist';
 import { FilterContext } from '../contexts/FilterContext';
 import { ToastAndroid } from 'react-native';
+import { Platform, Alert } from 'react-native';
 
 const Tab = createMaterialTopTabNavigator();
 
+
+
+
 const Toast = ({ visible, message }) => {
+if (Platform.OS === 'ios'){
+  if (visible) {
+    Alert.alert(
+      "Log Out",
+      // "Another user has logged in using this account!",
+      message,
+      [
+        { text: "OK", onPress: () => console.log("OK Pressed") },
+      ],
+      {
+        cancelable: false,
+      }
+    );
+    return null;
+  }
+  return null;
+
+}else {
   if (visible) {
     ToastAndroid.showWithGravityAndOffset(
       message,
@@ -31,12 +53,31 @@ const Toast = ({ visible, message }) => {
     return null;
   }
   return null;
+}
+  
 };
+
+// const IosAlert = ({ visible }) => {
+
+//   if (!visible) {
+//     Alert.alert(
+//       "Log Out",
+//       "Another user has logged in using this account!",
+//       [
+//         { text: "OK", onPress: () => console.log("OK Pressed") },
+//       ],
+//       {
+//         cancelable: false,
+//       }
+//     );
+//   }
+// };
 
 const ToolsTabScreen = () => {
   const sheetRef = React.useRef(null);
   const [visibleToast, setvisibleToast] = useState(false);
-  const { loginState, loginDispatch  } = useContext(AuthContext);
+  const [visibleAlert, setAlertVisible] = useState(false);
+  const { loginState, loginDispatch } = useContext(AuthContext);
   const { dispatch } = useContext(CSVDataContext);
   const { filterState, filterDispatch } = useContext(FilterContext);
   const userInfo = loginState.userData;
@@ -47,14 +88,12 @@ const ToolsTabScreen = () => {
   });
 
   const strategyKey = filterState.strategy.key;
-  const strategyName=filterState.strategy.name;
-  strategyText = `${
-    strategyKey.includes('M')
+  const strategyName = filterState.strategy.name;
+  strategyText = `${strategyKey.includes('M')
       ? 'Positional/Money Monsoon'
       : 'Intraday/Money ATM'
-  } ${
-    strategyName.trim()
-  }`;
+    } ${strategyName.trim()
+    }`;
 
   const signOut = async () => {
     try {
@@ -77,9 +116,12 @@ const ToolsTabScreen = () => {
     if (res.data.code == '200') {
       dispatch({ type: 'SAVE_CSV_DATA', data: csvData });
     }
-    else if(csvData == "Login Expired!"){
+    else if (csvData == "Login Expired!") {
       signOut()
       setvisibleToast(true);
+      // if (!(Platform.OS === 'ios' )){
+      //     setAlertVisible(true)  
+      //   }
     }
   };
 
@@ -89,6 +131,7 @@ const ToolsTabScreen = () => {
     }, 6000);
     return () => clearInterval(loop);
   });
+
 
   return (
     <>
@@ -127,27 +170,29 @@ const ToolsTabScreen = () => {
             <Tab.Screen name="Sup / Res" component={SupRes} />
           </Tab.Navigator>
         ) : (
-          <Tab.Navigator
-            sceneContainerStyle={{ backgroundColor: 'black' }}
-            tabBarOptions={{
-              scrollEnabled: true,
-              style: { backgroundColor: '#AF001F' },
-              activeTintColor: 'white',
-              indicatorStyle: { backgroundColor: 'white' },
-            }}>
-            <Tab.Screen name="Watchlist" component={Watchlist} />
-            <Tab.Screen name="Scanner" component={Scanner} />
-            <Tab.Screen name="Past Performance" component={PastPerformance} />
-            <Tab.Screen name="Alerts" component={Alerts} />
-            <Tab.Screen name="Pivot" component={Pivot} />
-            <Tab.Screen name="Sup / Res" component={SupRes} />
-          </Tab.Navigator>
-        )
+            <Tab.Navigator
+              sceneContainerStyle={{ backgroundColor: 'black' }}
+              tabBarOptions={{
+                scrollEnabled: true,
+                style: { backgroundColor: '#AF001F' },
+                activeTintColor: 'white',
+                indicatorStyle: { backgroundColor: 'white' },
+              }}>
+              <Tab.Screen name="Watchlist" component={Watchlist} />
+              <Tab.Screen name="Scanner" component={Scanner} />
+              <Tab.Screen name="Past Performance" component={PastPerformance} />
+              <Tab.Screen name="Alerts" component={Alerts} />
+              <Tab.Screen name="Pivot" component={Pivot} />
+              <Tab.Screen name="Sup / Res" component={SupRes} />
+            </Tab.Navigator>
+          )
       ) : (
-        <Loading />
-      )}
+          <Loading />
+        )}
       <FilterModal sheetRef={sheetRef} />
       <Toast visible={visibleToast} message="Another user has logged in using this account!" />
+
+      {/* <IosAlert visible={visibleAlert} /> */}
     </>
   );
 };

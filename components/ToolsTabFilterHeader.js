@@ -1,4 +1,5 @@
 import React from 'react';
+import { StatusBar } from 'react-native';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -26,6 +27,7 @@ const ToolsTabFilterHeader = ({ onStrategyPress, onFilterPress, strategyText }) 
 
 const styles = StyleSheet.create({
   header: {
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : StatusBar.currentHeight,
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: 'black',
